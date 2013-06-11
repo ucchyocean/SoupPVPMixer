@@ -1,0 +1,19 @@
+# SoupPVPMixer v0.1.0
+# @author     ucchy
+# @license    GPLv3
+# @copyright  Copyright ucchy 2013
+
+matchingRandomRange: 30
+kit:
+  items: 282,267,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282
+  armor: 0,0,0,0
+teleport: 
+  player1-1: 0,64,0
+  player1-2: 10,64,10
+  player2-1: 20,64,20
+  player2-2: 30,64,30
+  player3-1: 40,64,40
+  player3-2: 50,64,50
+  player4-1: 60,64,60
+  player4-2: 70,64,70
+  spectator: -10,100,-10

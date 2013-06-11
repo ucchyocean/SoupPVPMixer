@@ -1,0 +1,33 @@
+name: SoupPVPMixer
+main: com.github.ucchyocean.spm.SoupPVPMixer
+version: 0.1.0
+author: ucchy
+description: Soup PVP Mixer
+depend: [ExpTimer,BattlePoints]
+commands:
+  souppvpmixer:
+    description: Soup PVP Mixer
+    aliases: [spm]
+    usage: |
+           /<command> kit - 全プレイヤーにキットを配布する
+           /<command> clear - 全プレイヤーの持ち物を全て消去する
+           /<command> teleport - マッチングしたプレイヤーを設定したテレポート先へテレポートする
+           /<command> return - 全プレイヤーを観客席へテレポートする
+           /<command> match - 全プレイヤーをマッチングする
+permissions:
+  souppvpmixer.kit:
+    description: キット配布コマンド
+    default: op
+  souppvpmixer.clear:
+    description: 持ち物消去コマンド
+    default: op
+  souppvpmixer.teleport:
+    description: テレポートコマンド
+    default: op
+  souppvpmixer.return:
+    description: 帰還コマンド
+    default: op
+  souppvpmixer.match:
+    description: マッチングコマンド
+    default: op
+    
