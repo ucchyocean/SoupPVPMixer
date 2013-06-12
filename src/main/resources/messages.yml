@@ -1,0 +1,8 @@
+# SoupPVPMixer v0.1.0
+# @author     ucchy
+# @license    GPLv3
+# @copyright  Copyright ucchy 2013
+
+prefix: '&f[SPM]'
+matchingResult: '&bあなたの次の相手は、%s(%dP)さんになりました。'
+matchingResultSpectator: '&bあなたは次のゲームはお休みです。'

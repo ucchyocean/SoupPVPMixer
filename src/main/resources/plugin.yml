@@ -3,7 +3,7 @@ main: com.github.ucchyocean.spm.SoupPVPMixer
 version: 0.1.0
 author: ucchy
 description: Soup PVP Mixer
-depend: [ExpTimer,BattlePoints]
+depend: [BattlePoints]
 commands:
   souppvpmixer:
     description: Soup PVP Mixer

@@ -23,9 +23,9 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 /**
- * @author ucchy
  * kitの文字列からアイテムスタックを作ったり、
  * インベントリからkitの文字列に変換したりするユーティリティクラス
+ * @author ucchy
  */
 public class KitHandler {
 

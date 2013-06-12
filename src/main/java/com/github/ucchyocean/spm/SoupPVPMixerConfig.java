@@ -19,14 +19,16 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Soup PVP Mixer Config
  * @author ucchy
- *
  */
 public class SoupPVPMixerConfig {
 
     protected int matchingRandomRange;
     protected ArrayList<ItemStack> kitItems;
     protected ArrayList<ItemStack> kitArmor;
+    protected World teleportWorld;
     protected HashMap<String, Location> teleport;
+    protected boolean winnerTeleportToSpectator;
+    protected boolean loserRespawnToSpectator;
 
     public SoupPVPMixerConfig() {
         reloadConfig();
@@ -57,19 +59,26 @@ public class SoupPVPMixerConfig {
         matchingRandomRange = config.getInt("matchingRandomRange", 30);
         kitItems = handler.convertToItemStack(config.getString("kit.items", ""));
         kitArmor = handler.convertToItemStack(config.getString("kit.armor", ""));
+        String teleWorld = config.getString("teleportWorld", "world");
+        teleportWorld = Bukkit.getWorld(teleWorld);
+        if ( teleportWorld == null ) {
+            teleportWorld = Bukkit.getWorld("world");
+        }
 
         ConfigurationSection section = config.getConfigurationSection("teleport");
         teleport = new HashMap<String, Location>();
         if ( section != null ) {
             for ( String key : section.getKeys(false) ) {
-                teleport.put(key, getLocation(section.getString(key)));
+                teleport.put(key, getLocation(teleportWorld, section.getString(key)));
             }
         }
+
+        winnerTeleportToSpectator = config.getBoolean("winnerTeleportToSpectator", true);
+        loserRespawnToSpectator = config.getBoolean("loserRespawnToSpectator", true);
     }
 
-    private Location getLocation(String str) {
+    private Location getLocation(World world, String str) {
 
-        World world = Bukkit.getWorld("world");
         String[] temp = str.split(",");
         if ( temp.length >= 3 && temp[0].matches("-?[0-9]+") &&
                 temp[1].matches("-?[0-9]+") && temp[2].matches("-?[0-9]+") ) {

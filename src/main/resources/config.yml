@@ -3,10 +3,11 @@
 # @license    GPLv3
 # @copyright  Copyright ucchy 2013
 
-matchingRandomRange: 30
+matchingRandomRange: 50
 kit:
-  items: 282,267,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282
+  items: 282,267,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282
   armor: 0,0,0,0
+teleportWorld: world
 teleport: 
   player1-1: 0,64,0
   player1-2: 10,64,10
@@ -17,3 +18,5 @@ teleport:
   player4-1: 60,64,60
   player4-2: 70,64,70
   spectator: -10,100,-10
+winnerTeleportToSpectator: true
+loserRespawnToSpectator: true
