@@ -1,6 +1,6 @@
 name: SoupPVPMixer
 main: com.github.ucchyocean.spm.SoupPVPMixer
-version: 0.1.0
+version: 0.1.1
 author: ucchy
 description: Soup PVP Mixer
 depend: [BattlePoints]
@@ -30,4 +30,11 @@ permissions:
   souppvpmixer.match:
     description: マッチングコマンド
     default: op
-    
+  souppvpmixer.*:
+    description: SoupPVPMixerの全権限
+    children:
+      souppvpmixer.kit: true
+      souppvpmixer.clear: true
+      souppvpmixer.teleport: true
+      souppvpmixer.return: true
+      souppvpmixer.match: true
