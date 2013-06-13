@@ -226,16 +226,15 @@ public class SoupPVPMixer extends JavaPlugin {
             Player player2 = Bukkit.getPlayerExact(data.getPlayer2().name);
             Location location2 = config.teleport.get(key);
 
+            if ( location1 != null && location2 != null ) {
+                location1 = setDirection(location1, location2);
+                location2 = setDirection(location2, location1);
+            }
+
             if ( player1 != null && location1 != null ) {
-                if ( location2 != null ) {
-                    location1 = setDirection(location1, location2);
-                }
                 player1.teleport(location1.add(0.5, 0, 0.5), TeleportCause.PLUGIN);
             }
             if ( player2 != null && location2 != null ) {
-                if ( location1 != null ) {
-                    location2 = setDirection(location2, location1);
-                }
                 player2.teleport(location2.add(0.5, 0, 0.5), TeleportCause.PLUGIN);
             }
         }
@@ -412,8 +411,8 @@ public class SoupPVPMixer extends JavaPlugin {
         double deltaY = target.getY() - origin.getY();
         double deltaZ = target.getZ() - origin.getZ();
         double distance = Math.sqrt(deltaZ * deltaZ + deltaX * deltaX);
-        double pitch = Math.asin(deltaY/distance);
-        double yaw = Math.atan2(deltaX, deltaZ);
+        double pitch = -Math.asin(deltaY/distance) * 180 / Math.PI;
+        double yaw = -Math.atan2(deltaX, deltaZ) * 180 / Math.PI;
         result.setPitch((float)pitch);
         result.setYaw((float)yaw);
         return result;
