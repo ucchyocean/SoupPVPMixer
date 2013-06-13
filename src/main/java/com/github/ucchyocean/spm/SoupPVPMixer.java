@@ -147,10 +147,28 @@ public class SoupPVPMixer extends JavaPlugin {
             // 全回復、全アイテムクリア
             clearInvAndHeal(p);
 
-            // アイテム追加
+            // アイテム配布
             for ( ItemStack i : config.kitItems ) {
                 p.getInventory().addItem(i);
             }
+
+            // 防具配布
+            if ( config.kitArmor != null ) {
+
+                if (config.kitArmor.size() >= 1 && config.kitArmor.get(0) != null ) {
+                    p.getInventory().setHelmet(config.kitArmor.get(0));
+                }
+                if (config.kitArmor.size() >= 2 && config.kitArmor.get(1) != null ) {
+                    p.getInventory().setChestplate(config.kitArmor.get(1));
+                }
+                if (config.kitArmor.size() >= 3 && config.kitArmor.get(2) != null ) {
+                    p.getInventory().setLeggings(config.kitArmor.get(2));
+                }
+                if (config.kitArmor.size() >= 4 && config.kitArmor.get(3) != null ) {
+                    p.getInventory().setBoots(config.kitArmor.get(3));
+                }
+            }
+
         }
 
         return true;
@@ -313,14 +331,14 @@ public class SoupPVPMixer extends JavaPlugin {
         }
 
         // マッチングを表示する
-        Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "===== Matching =====");
+        Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "======== Matching ========");
         for ( int i=0; i<matching.size(); i++ ) {
             MatchingData d = matching.get(i);
             Bukkit.broadcastMessage(String.format(ChatColor.RED + "%d. %s(%dP) - %s(%dP)",
                     (i+1), d.getPlayer1().name, d.getPlayer1().point,
                     d.getPlayer2().name, d.getPlayer2().point));
         }
-        Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "====================");
+        Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "==========================");
 
         // 各プレイヤーにマッチング相手を表示する
         for ( MatchingData d : matching ) {
