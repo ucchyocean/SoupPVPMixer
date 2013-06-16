@@ -23,9 +23,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.ucchyocean.bp.BPData;
 import com.github.ucchyocean.bp.BPUserData;
-import com.github.ucchyocean.bp.BattlePoints;
 
 /**
  * Soup PVP Mixer
@@ -41,7 +39,6 @@ public class SoupPVPMixer extends JavaPlugin {
 
     protected static SoupPVPMixer instance;
     protected static SoupPVPMixerConfig config;
-    private BattlePoints bp;
 
     private Player spectator;
     private ArrayList<MatchingData> matching;
@@ -63,9 +60,9 @@ public class SoupPVPMixer extends JavaPlugin {
 
         // リスナーを設定する
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-
-        // BattlePoints を取得する
-        bp = (BattlePoints)getServer().getPluginManager().getPlugin("BattlePoints");
+//
+//        // BattlePoints を取得する
+//        bp = (BattlePoints)getServer().getPluginManager().getPlugin("BattlePoints");
     }
 
     /**
@@ -301,15 +298,14 @@ public class SoupPVPMixer extends JavaPlugin {
             players.remove(index);
         }
 
-        BPData data = bp.getBPData();
         HashMap<String, BPUserData> userdata = new HashMap<String, BPUserData>();
         ArrayList<BPUserData> userRandomData = new ArrayList<BPUserData>();
 
         for ( Player p : players ) {
-            int point = data.getPoint(p.getName());
-            int randomPoint = point + random.nextInt(config.matchingRandomRange);
-            userdata.put(p.getName(), new BPUserData(p.getName(), point));
-            userRandomData.add(new BPUserData(p.getName(), randomPoint));
+            BPUserData data = BPUserData.getData(p.getName());
+            int randomPoint = data.point + random.nextInt(config.matchingRandomRange);
+            userdata.put(p.getName(), data);
+            userRandomData.add(new BPUserData(p.getName(), randomPoint, 0, 0));
         }
 
         // ソート
@@ -343,8 +339,12 @@ public class SoupPVPMixer extends JavaPlugin {
         for ( MatchingData d : matching ) {
             Player p1 = Bukkit.getPlayerExact(d.getPlayer1().name);
             Player p2 = Bukkit.getPlayerExact(d.getPlayer2().name);
-            p1.sendMessage(getMessage("matchingResult", d.getPlayer2().name, d.getPlayer2().point));
-            p2.sendMessage(getMessage("matchingResult", d.getPlayer1().name, d.getPlayer1().point));
+            BPUserData d1 = d.getPlayer1();
+            BPUserData d2 = d.getPlayer2();
+            p1.sendMessage(getMessage("matchingResult",
+                    d2.name, d2.point, d2.kills, d2.deaths));
+            p2.sendMessage(getMessage("matchingResult",
+                    d1.name, d1.point, d1.kills, d1.deaths));
         }
         if ( spectator != null ) {
             spectator.sendMessage(getMessage("matchingResultSpectator"));
