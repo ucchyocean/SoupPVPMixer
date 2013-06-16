@@ -91,7 +91,7 @@ public class PlayerListener implements Listener {
             Player loser = event.getPlayer();
 
             // 勝者にメッセージを送る
-            winner.sendMessage(Messages.get("endByLogout"));
+            winner.sendMessage(Utility.replaceColorCode(Messages.get("endByLogout")));
 
             // ポイントを変動する
             SoupPVPMixer.bp.changePoints(winner, loser);
