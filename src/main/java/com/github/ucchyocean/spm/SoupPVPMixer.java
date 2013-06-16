@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.ucchyocean.bp.BPUserData;
+import com.github.ucchyocean.bp.BattlePoints;
 
 /**
  * Soup PVP Mixer
@@ -33,15 +34,16 @@ public class SoupPVPMixer extends JavaPlugin {
     private static String prefix;
 
     private static final String[] COMMANDS = {
-        "join", "leave", "kit", "clear", "teleport", "return", "match",
+        "join", "leave", "list", "kit", "clear", "teleport", "return", "match",
     };
 
     protected static SoupPVPMixer instance;
     protected static SoupPVPMixerConfig config;
+    protected static BattlePoints bp;
 
     private Player spectator;
     private ArrayList<MatchingData> matching;
-    private ArrayList<String> participant;
+    private ArrayList<Player> participant;
 
     /**
      * @see org.bukkit.plugin.java.JavaPlugin#onEnable()
@@ -50,7 +52,7 @@ public class SoupPVPMixer extends JavaPlugin {
     public void onEnable() {
 
         instance = this;
-        participant = new ArrayList<String>();
+        participant = new ArrayList<Player>();
 
         // コンフィグをロードする
         config = new SoupPVPMixerConfig();
@@ -61,9 +63,9 @@ public class SoupPVPMixer extends JavaPlugin {
 
         // リスナーを設定する
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-//
-//        // BattlePoints を取得する
-//        bp = (BattlePoints)getServer().getPluginManager().getPlugin("BattlePoints");
+
+        // BattlePoints を取得する
+        bp = (BattlePoints)getServer().getPluginManager().getPlugin("BattlePoints");
     }
 
     /**
@@ -107,6 +109,8 @@ public class SoupPVPMixer extends JavaPlugin {
             return doJoin(sender, command, label, args);
         } else if ( args[0].equalsIgnoreCase("leave") ) {
             return doLeave(sender, command, label, args);
+        } else if ( args[0].equalsIgnoreCase("list") ) {
+            return doList(sender, command, label, args);
         } else if ( args[0].equalsIgnoreCase("kit") ) {
             return doKit(sender, command, label, args);
         } else if ( args[0].equalsIgnoreCase("clear") ) {
@@ -132,7 +136,7 @@ public class SoupPVPMixer extends JavaPlugin {
      */
     private boolean doJoin(CommandSender sender, Command command, String label, String[] args) {
 
-        String target;
+        Player target;
 
         // 指定引数の解析
         if ( args.length == 1 ) {
@@ -149,7 +153,7 @@ public class SoupPVPMixer extends JavaPlugin {
                 return true;
             }
 
-            target = ((Player)sender).getName();
+            target = (Player)sender;
 
         } else {
 
@@ -159,25 +163,23 @@ public class SoupPVPMixer extends JavaPlugin {
                 return true;
             }
 
-            Player p = Bukkit.getPlayerExact(args[1]);
-            if ( p == null ) {
+            target = Bukkit.getPlayerExact(args[1]);
+            if ( target == null ) {
                 sender.sendMessage(ChatColor.RED +
                         "指定されたプレイヤーが見つかりません。");
                 return true;
             }
-
-            target = p.getName();
         }
 
         if ( participant.contains(target) ) {
             sender.sendMessage(ChatColor.RED +
-                    target + " は、既に参加しています。");
+                    target.getName() + " は、既に参加しています。");
             return true;
         }
 
         participant.add(target);
         sender.sendMessage(ChatColor.AQUA +
-                target + " を参加者に追加しました。");
+                target.getName() + " を参加者に追加しました。");
 
         return true;
     }
@@ -192,7 +194,7 @@ public class SoupPVPMixer extends JavaPlugin {
      */
     private boolean doLeave(CommandSender sender, Command command, String label, String[] args) {
 
-        String target;
+        Player target;
 
         // 指定引数の解析
         if ( args.length == 1 ) {
@@ -209,7 +211,7 @@ public class SoupPVPMixer extends JavaPlugin {
                 return true;
             }
 
-            target = ((Player)sender).getName();
+            target = (Player)sender;
 
         } else {
 
@@ -219,18 +221,54 @@ public class SoupPVPMixer extends JavaPlugin {
                 return true;
             }
 
-            target = args[1];
+            target = Bukkit.getPlayerExact(args[1]);
+            if ( target == null ) {
+                sender.sendMessage(ChatColor.RED +
+                        "指定されたプレイヤーが見つかりません。");
+                return true;
+            }
         }
 
         if ( !participant.contains(target) ) {
             sender.sendMessage(ChatColor.RED +
-                    target + " は、参加者にいません。");
+                    target.getName() + " は、参加者にいません。");
             return true;
         }
 
         participant.remove(target);
         sender.sendMessage(ChatColor.AQUA +
-                target + " を参加者から離脱しました。");
+                target.getName() + " を参加者から外しました。");
+
+        return true;
+    }
+
+    /**
+     * リストコマンドの実行
+     * @param sender
+     * @param command
+     * @param label
+     * @param args
+     * @return
+     */
+    private boolean doList(CommandSender sender, Command command, String label, String[] args) {
+
+        // 参加者リストを表示する
+
+        ArrayList<BPUserData> data = new ArrayList<BPUserData>();
+        for ( Player p : participant ) {
+            data.add(BPUserData.getData(p.getName()));
+        }
+        BPUserData.sortUserData(data);
+
+        sender.sendMessage(ChatColor.LIGHT_PURPLE + "========= Players ========");
+        for ( BPUserData d : data ) {
+            String color = bp.getColorByPoint(d.point).toString();
+            String message = String.format(
+                    ChatColor.RED + "%s%s (%dPoint, %dKills, %dDeaths)",
+                    color, d.name, d.point, d.kills, d.deaths);
+            sender.sendMessage(message);
+        }
+        sender.sendMessage(ChatColor.LIGHT_PURPLE + "==========================");
 
         return true;
     }
@@ -250,12 +288,7 @@ public class SoupPVPMixer extends JavaPlugin {
             return true;
         }
 
-        for ( String name : participant ) {
-
-            Player p = Bukkit.getPlayerExact(name);
-            if ( p == null ) {
-                continue;
-            }
+        for ( Player p : participant ) {
 
             if ( p.equals(spectator) ) {
                 continue;
@@ -305,12 +338,7 @@ public class SoupPVPMixer extends JavaPlugin {
             return true;
         }
 
-        for ( String name : participant ) {
-
-            Player p = Bukkit.getPlayerExact(name);
-            if ( p == null ) {
-                continue;
-            }
+        for ( Player p : participant ) {
 
             // 全回復、全アイテムクリア
             clearInvAndHeal(p);
@@ -419,15 +447,7 @@ public class SoupPVPMixer extends JavaPlugin {
 
         spectator = null;
 
-        ArrayList<Player> players = new ArrayList<Player>();
-        for ( String name : participant ) {
-            Player p = Bukkit.getPlayerExact(name);
-            if ( p != null ) {
-                players.add(p);
-            }
-        }
-
-        if ( players.size() <= 0 ) {
+        if ( participant.size() <= 0 ) {
             sender.sendMessage("対象のプレイヤーが誰も居ません。");
             return true;
         }
@@ -435,16 +455,16 @@ public class SoupPVPMixer extends JavaPlugin {
         Random random = new Random(System.currentTimeMillis());
 
         // 人数が奇数なら、1人ランダムで休ませる
-        if ( players.size() % 2 == 1 ) {
-            int index = random.nextInt(players.size());
-            spectator = players.get(index);
-            players.remove(index);
+        if ( participant.size() % 2 == 1 ) {
+            int index = random.nextInt(participant.size());
+            spectator = participant.get(index);
+            participant.remove(index);
         }
 
         HashMap<String, BPUserData> userdata = new HashMap<String, BPUserData>();
         ArrayList<BPUserData> userRandomData = new ArrayList<BPUserData>();
 
-        for ( Player p : players ) {
+        for ( Player p : participant ) {
             BPUserData data = BPUserData.getData(p.getName());
             int randomPoint = data.point + random.nextInt(config.matchingRandomRange);
             userdata.put(p.getName(), data);
@@ -591,6 +611,16 @@ public class SoupPVPMixer extends JavaPlugin {
     protected void removeMatching(MatchingData data) {
         if ( matching != null ) {
             matching.remove(data);
+        }
+    }
+
+    /**
+     * 参加者から該当プレイヤーを削除する
+     * @param player 削除するプレイヤー
+     */
+    protected void removeFromParticipant(Player player) {
+        if ( participant.contains(player) ) {
+            participant.remove(player);
         }
     }
 }

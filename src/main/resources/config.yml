@@ -20,3 +20,4 @@ teleport:
   spectator: -10,100,-10
 winnerTeleportToSpectator: true
 loserRespawnToSpectator: true
+loseByLogout: true

@@ -6,3 +6,4 @@
 prefix: '&f[SPM]'
 matchingResult: '&bあなたの次の相手は、%s(%dP,%dK,%dD)さんになりました。'
 matchingResultSpectator: '&bあなたは次のゲームはお休みです。'
+endByLogout: '&b相手のプレイヤーがログアウトしたので、あなたが勝利しました。'

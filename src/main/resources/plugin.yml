@@ -13,11 +13,12 @@ commands:
            /<command> join (PlayerName) - 指定したプレイヤーをSoupPVPに参加させる。
            /<command> leave - SoupPVPから離脱する。
            /<command> leave (PlayerName) - 指定したプレイヤーをSoupPVPから離脱させる。
-           /<command> kit - 全プレイヤーにキットを配布する
-           /<command> clear - 全プレイヤーの持ち物を全て消去する
-           /<command> teleport - マッチングしたプレイヤーを設定したテレポート先へテレポートする
-           /<command> return - 全プレイヤーを観客席へテレポートする
-           /<command> match - 全プレイヤーをマッチングする
+           /<command> list - 参加者のリストを表示する。
+           /<command> kit - 全プレイヤーにキットを配布する。
+           /<command> clear - 全プレイヤーの持ち物を全て消去する。
+           /<command> teleport - マッチングしたプレイヤーを設定したテレポート先へテレポートする。
+           /<command> return - 全プレイヤーを観客席へテレポートする。
+           /<command> match - 全プレイヤーをマッチングする。
 permissions:
   souppvpmixer.join:
     description: joinコマンドの実行権限
@@ -26,17 +27,20 @@ permissions:
     description: SoupPVPに参加するコマンドの権限
     default: true
   souppvpmixer.join.other:
-    description: SoupPVPに参加するコマンドの権限
+    description: SoupPVPに参加させるコマンドの権限
     default: op
   souppvpmixer.leave:
     description: leaveコマンドの実行権限
     default: true
   souppvpmixer.leave.self:
-    description: SoupPVPに参加するコマンドの権限
+    description: SoupPVPから離脱するコマンドの権限
     default: true
   souppvpmixer.leave.other:
-    description: SoupPVPに参加するコマンドの権限
+    description: SoupPVPから離脱させるコマンドの権限
     default: op
+  souppvpmixer.list:
+    description: 参加者リストコマンド
+    default: true
   souppvpmixer.kit:
     description: キット配布コマンド
     default: op
@@ -61,6 +65,7 @@ permissions:
       souppvpmixer.leave: true
       souppvpmixer.leave.self: true
       souppvpmixer.leave.other: true
+      souppvpmixer.list: true
       souppvpmixer.kit: true
       souppvpmixer.clear: true
       souppvpmixer.teleport: true

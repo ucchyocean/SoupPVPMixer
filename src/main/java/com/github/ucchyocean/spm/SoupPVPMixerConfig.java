@@ -29,6 +29,7 @@ public class SoupPVPMixerConfig {
     protected HashMap<String, Location> teleport;
     protected boolean winnerTeleportToSpectator;
     protected boolean loserRespawnToSpectator;
+    protected boolean loseByLogout;
 
     public SoupPVPMixerConfig() {
         reloadConfig();
@@ -75,6 +76,7 @@ public class SoupPVPMixerConfig {
 
         winnerTeleportToSpectator = config.getBoolean("winnerTeleportToSpectator", true);
         loserRespawnToSpectator = config.getBoolean("loserRespawnToSpectator", true);
+        loseByLogout = config.getBoolean("loseByLogout", true);
     }
 
     private Location getLocation(World world, String str) {
