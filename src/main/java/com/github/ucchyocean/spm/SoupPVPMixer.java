@@ -14,7 +14,6 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -34,7 +33,7 @@ public class SoupPVPMixer extends JavaPlugin {
     private static String prefix;
 
     private static final String[] COMMANDS = {
-        "kit", "clear", "teleport", "return", "match",
+        "join", "leave", "kit", "clear", "teleport", "return", "match",
     };
 
     protected static SoupPVPMixer instance;
@@ -42,6 +41,7 @@ public class SoupPVPMixer extends JavaPlugin {
 
     private Player spectator;
     private ArrayList<MatchingData> matching;
+    private ArrayList<String> participant;
 
     /**
      * @see org.bukkit.plugin.java.JavaPlugin#onEnable()
@@ -50,6 +50,7 @@ public class SoupPVPMixer extends JavaPlugin {
     public void onEnable() {
 
         instance = this;
+        participant = new ArrayList<String>();
 
         // コンフィグをロードする
         config = new SoupPVPMixerConfig();
@@ -102,7 +103,11 @@ public class SoupPVPMixer extends JavaPlugin {
             return true;
         }
 
-        if ( args[0].equalsIgnoreCase("kit") ) {
+        if ( args[0].equalsIgnoreCase("join") ) {
+            return doJoin(sender, command, label, args);
+        } else if ( args[0].equalsIgnoreCase("leave") ) {
+            return doLeave(sender, command, label, args);
+        } else if ( args[0].equalsIgnoreCase("kit") ) {
             return doKit(sender, command, label, args);
         } else if ( args[0].equalsIgnoreCase("clear") ) {
             return doClear(sender, command, label, args);
@@ -118,6 +123,119 @@ public class SoupPVPMixer extends JavaPlugin {
     }
 
     /**
+     * ジョインコマンドの実行
+     * @param sender
+     * @param command
+     * @param label
+     * @param args
+     * @return
+     */
+    private boolean doJoin(CommandSender sender, Command command, String label, String[] args) {
+
+        String target;
+
+        // 指定引数の解析
+        if ( args.length == 1 ) {
+
+            if ( !sender.hasPermission("souppvpmixer.join.self") ) {
+                sender.sendMessage(ChatColor.RED +
+                        "You don't have permission \"souppvpmixer.souppvpmixer.join.self\".");
+                return true;
+            }
+
+            if ( !(sender instanceof Player) ) {
+                sender.sendMessage(ChatColor.RED +
+                        "/" + label + " join はゲーム内でしか実行できません。");
+                return true;
+            }
+
+            target = ((Player)sender).getName();
+
+        } else {
+
+            if ( !sender.hasPermission("souppvpmixer.join.other") ) {
+                sender.sendMessage(ChatColor.RED +
+                        "You don't have permission \"souppvpmixer.souppvpmixer.join.other\".");
+                return true;
+            }
+
+            Player p = Bukkit.getPlayerExact(args[1]);
+            if ( p == null ) {
+                sender.sendMessage(ChatColor.RED +
+                        "指定されたプレイヤーが見つかりません。");
+                return true;
+            }
+
+            target = p.getName();
+        }
+
+        if ( participant.contains(target) ) {
+            sender.sendMessage(ChatColor.RED +
+                    target + " は、既に参加しています。");
+            return true;
+        }
+
+        participant.add(target);
+        sender.sendMessage(ChatColor.AQUA +
+                target + " を参加者に追加しました。");
+
+        return true;
+    }
+
+    /**
+     * リーブコマンドの実行
+     * @param sender
+     * @param command
+     * @param label
+     * @param args
+     * @return
+     */
+    private boolean doLeave(CommandSender sender, Command command, String label, String[] args) {
+
+        String target;
+
+        // 指定引数の解析
+        if ( args.length == 1 ) {
+
+            if ( !sender.hasPermission("souppvpmixer.leave.self") ) {
+                sender.sendMessage(ChatColor.RED +
+                        "You don't have permission \"souppvpmixer.souppvpmixer.leave.self\".");
+                return true;
+            }
+
+            if ( !(sender instanceof Player) ) {
+                sender.sendMessage(ChatColor.RED +
+                        "/" + label + " leave はゲーム内でしか実行できません。");
+                return true;
+            }
+
+            target = ((Player)sender).getName();
+
+        } else {
+
+            if ( !sender.hasPermission("souppvpmixer.leave.other") ) {
+                sender.sendMessage(ChatColor.RED +
+                        "You don't have permission \"souppvpmixer.souppvpmixer.leave.other\".");
+                return true;
+            }
+
+            target = args[1];
+        }
+
+        if ( !participant.contains(target) ) {
+            sender.sendMessage(ChatColor.RED +
+                    target + " は、参加者にいません。");
+            return true;
+        }
+
+        participant.remove(target);
+        sender.sendMessage(ChatColor.AQUA +
+                target + " を参加者から離脱しました。");
+
+        return true;
+    }
+
+    /**
      * キットコマンドの実行
      * @param sender
      * @param command
@@ -127,15 +245,17 @@ public class SoupPVPMixer extends JavaPlugin {
      */
     private boolean doKit(CommandSender sender, Command command, String label, String[] args) {
 
-        // プレイヤーを取得する
-        ArrayList<Player> players = getPlayersWithoutCreative();
-
-        if ( players.size() <= 0 ) {
+        if ( participant.size() <= 0 ) {
             sender.sendMessage("対象のプレイヤーが誰も居ません。");
             return true;
         }
 
-        for ( Player p : players ) {
+        for ( String name : participant ) {
+
+            Player p = Bukkit.getPlayerExact(name);
+            if ( p == null ) {
+                continue;
+            }
 
             if ( p.equals(spectator) ) {
                 continue;
@@ -165,7 +285,6 @@ public class SoupPVPMixer extends JavaPlugin {
                     p.getInventory().setBoots(config.kitArmor.get(3));
                 }
             }
-
         }
 
         return true;
@@ -181,15 +300,18 @@ public class SoupPVPMixer extends JavaPlugin {
      */
     private boolean doClear(CommandSender sender, Command command, String label, String[] args) {
 
-        // プレイヤーを取得する
-        ArrayList<Player> players = getPlayersWithoutCreative();
-
-        if ( players.size() <= 0 ) {
+        if ( participant.size() <= 0 ) {
             sender.sendMessage("対象のプレイヤーが誰も居ません。");
             return true;
         }
 
-        for ( Player p : players ) {
+        for ( String name : participant ) {
+
+            Player p = Bukkit.getPlayerExact(name);
+            if ( p == null ) {
+                continue;
+            }
+
             // 全回復、全アイテムクリア
             clearInvAndHeal(p);
         }
@@ -212,6 +334,7 @@ public class SoupPVPMixer extends JavaPlugin {
             return true;
         }
 
+        // マッチングデータをもとに、定義されたテレポート先へテレポートさせる
         for ( int i=0; i<matching.size(); i++ ) {
 
             MatchingData data = matching.get(i);
@@ -236,6 +359,7 @@ public class SoupPVPMixer extends JavaPlugin {
             }
         }
 
+        // 余った人を観客席に送る
         Location spectatorLocation = config.teleport.get("spectator");
         if ( spectator != null && spectatorLocation != null ) {
             spectator.teleport(spectatorLocation.add(0.5, 0, 0.5), TeleportCause.PLUGIN);
@@ -254,19 +378,32 @@ public class SoupPVPMixer extends JavaPlugin {
      */
     private boolean doReturn(CommandSender sender, Command command, String label, String[] args) {
 
-        ArrayList<Player> players = getPlayersWithoutCreative();
-
-        if ( players.size() <= 0 ) {
-            sender.sendMessage("対象のプレイヤーが誰も居ません。");
+        if ( matching == null ) {
+            sender.sendMessage("マッチングデータがまだありません。");
             return true;
         }
 
         Location spectatorLocation = config.teleport.get("spectator");
-        if ( spectatorLocation != null ) {
-            for ( Player p : players ) {
-                p.teleport(spectatorLocation, TeleportCause.PLUGIN);
+        if ( spectatorLocation == null ) {
+            sender.sendMessage("プレイヤーの戻り先が定義されていません。");
+            return true;
+        }
+
+        // マッチングがまだ残っているプレイヤーを全部戻す
+        for ( MatchingData data : matching ) {
+            Player p1 = Bukkit.getPlayerExact(data.getPlayer1().name);
+            if ( p1 != null ) {
+                p1.teleport(spectatorLocation, TeleportCause.PLUGIN);
+            }
+            Player p2 = Bukkit.getPlayerExact(data.getPlayer2().name);
+            if ( p2 != null ) {
+                p2.teleport(spectatorLocation, TeleportCause.PLUGIN);
             }
         }
+
+        // マッチングを全て消去する
+        matching.clear();
+
         return true;
     }
 
@@ -280,9 +417,15 @@ public class SoupPVPMixer extends JavaPlugin {
      */
     private boolean doMatch(CommandSender sender, Command command, String label, String[] args) {
 
-        // プレイヤーを取得する
-        ArrayList<Player> players = getPlayersWithoutCreative();
         spectator = null;
+
+        ArrayList<Player> players = new ArrayList<Player>();
+        for ( String name : participant ) {
+            Player p = Bukkit.getPlayerExact(name);
+            if ( p != null ) {
+                players.add(p);
+            }
+        }
 
         if ( players.size() <= 0 ) {
             sender.sendMessage("対象のプレイヤーが誰も居ません。");
@@ -351,22 +494,6 @@ public class SoupPVPMixer extends JavaPlugin {
         }
 
         return true;
-    }
-
-    /**
-     * クリエイティブ以外のプレイヤーを取得する
-     * @return クリエイティブ以外のプレイヤー
-     */
-    private ArrayList<Player> getPlayersWithoutCreative() {
-
-        ArrayList<Player> players = new ArrayList<Player>();
-        Player[] all = Bukkit.getOnlinePlayers();
-        for ( Player p : all ) {
-            if ( p.getGameMode() != GameMode.CREATIVE ) {
-                players.add(p);
-            }
-        }
-        return players;
     }
 
     /**

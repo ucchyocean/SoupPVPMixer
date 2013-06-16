@@ -9,12 +9,34 @@ commands:
     description: Soup PVP Mixer
     aliases: [spm]
     usage: |
+           /<command> join - SoupPVPに参加する。
+           /<command> join (PlayerName) - 指定したプレイヤーをSoupPVPに参加させる。
+           /<command> leave - SoupPVPから離脱する。
+           /<command> leave (PlayerName) - 指定したプレイヤーをSoupPVPから離脱させる。
            /<command> kit - 全プレイヤーにキットを配布する
            /<command> clear - 全プレイヤーの持ち物を全て消去する
            /<command> teleport - マッチングしたプレイヤーを設定したテレポート先へテレポートする
            /<command> return - 全プレイヤーを観客席へテレポートする
            /<command> match - 全プレイヤーをマッチングする
 permissions:
+  souppvpmixer.join:
+    description: joinコマンドの実行権限
+    default: true
+  souppvpmixer.join.self:
+    description: SoupPVPに参加するコマンドの権限
+    default: true
+  souppvpmixer.join.other:
+    description: SoupPVPに参加するコマンドの権限
+    default: op
+  souppvpmixer.leave:
+    description: leaveコマンドの実行権限
+    default: true
+  souppvpmixer.leave.self:
+    description: SoupPVPに参加するコマンドの権限
+    default: true
+  souppvpmixer.leave.other:
+    description: SoupPVPに参加するコマンドの権限
+    default: op
   souppvpmixer.kit:
     description: キット配布コマンド
     default: op
@@ -33,6 +55,12 @@ permissions:
   souppvpmixer.*:
     description: SoupPVPMixerの全権限
     children:
+      souppvpmixer.join: true
+      souppvpmixer.join.self: true
+      souppvpmixer.join.other: true
+      souppvpmixer.leave: true
+      souppvpmixer.leave.self: true
+      souppvpmixer.leave.other: true
       souppvpmixer.kit: true
       souppvpmixer.clear: true
       souppvpmixer.teleport: true
