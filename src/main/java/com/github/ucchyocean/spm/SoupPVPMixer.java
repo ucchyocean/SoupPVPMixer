@@ -143,7 +143,7 @@ public class SoupPVPMixer extends JavaPlugin {
 
             if ( !sender.hasPermission("souppvpmixer.join.self") ) {
                 sender.sendMessage(ChatColor.RED +
-                        "You don't have permission \"souppvpmixer.souppvpmixer.join.self\".");
+                        "You don't have permission \"souppvpmixer.join.self\".");
                 return true;
             }
 
@@ -159,7 +159,7 @@ public class SoupPVPMixer extends JavaPlugin {
 
             if ( !sender.hasPermission("souppvpmixer.join.other") ) {
                 sender.sendMessage(ChatColor.RED +
-                        "You don't have permission \"souppvpmixer.souppvpmixer.join.other\".");
+                        "You don't have permission \"souppvpmixer.join.other\".");
                 return true;
             }
 
@@ -201,7 +201,7 @@ public class SoupPVPMixer extends JavaPlugin {
 
             if ( !sender.hasPermission("souppvpmixer.leave.self") ) {
                 sender.sendMessage(ChatColor.RED +
-                        "You don't have permission \"souppvpmixer.souppvpmixer.leave.self\".");
+                        "You don't have permission \"souppvpmixer.leave.self\".");
                 return true;
             }
 
@@ -217,7 +217,7 @@ public class SoupPVPMixer extends JavaPlugin {
 
             if ( !sender.hasPermission("souppvpmixer.leave.other") ) {
                 sender.sendMessage(ChatColor.RED +
-                        "You don't have permission \"souppvpmixer.souppvpmixer.leave.other\".");
+                        "You don't have permission \"souppvpmixer.leave.other\".");
                 return true;
             }
 
@@ -558,8 +558,8 @@ public class SoupPVPMixer extends JavaPlugin {
         double deltaY = target.getY() - origin.getY();
         double deltaZ = target.getZ() - origin.getZ();
         double distance = Math.sqrt(deltaZ * deltaZ + deltaX * deltaX);
-        double pitch = -Math.asin(deltaY/distance) * 180 / Math.PI;
-        double yaw = -Math.atan2(deltaX, deltaZ) * 180 / Math.PI;
+        double pitch = Math.toDegrees(-Math.atan2(deltaY, distance));
+        double yaw = Math.toDegrees(-Math.atan2(deltaX, deltaZ));
         result.setPitch((float)pitch);
         result.setYaw((float)yaw);
         return result;
