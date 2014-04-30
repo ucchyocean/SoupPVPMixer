@@ -5,7 +5,6 @@
  */
 package com.github.ucchyocean.spm;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,15 +34,15 @@ public class PlayerListener implements Listener {
         }
 
         String winner;
-        if ( data.getPlayer1().name.equals(player.getName()) ) {
-            winner = data.getPlayer2().name;
+        if ( data.getPlayer1().getName().equals(player.getName()) ) {
+            winner = data.getPlayer2().getName();
         } else {
-            winner = data.getPlayer1().name;
+            winner = data.getPlayer1().getName();
         }
 
         // 勝者のインベントリをクリアして、客席にテレポートする
         if ( SoupPVPMixer.config.winnerTeleportToSpectator ) {
-            Player winnerPlayer = Bukkit.getPlayerExact(winner);
+            Player winnerPlayer = Utility.getPlayerExact(winner);
             SoupPVPMixer.clearInvAndHeal(winnerPlayer);
             if ( SoupPVPMixer.config.teleport.containsKey("spectator") ) {
                 Location loc = SoupPVPMixer.config.teleport.get("spectator");

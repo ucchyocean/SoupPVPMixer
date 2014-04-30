@@ -5,7 +5,6 @@
  */
 package com.github.ucchyocean.spm;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.github.ucchyocean.bp.BPUserData;
@@ -45,10 +44,10 @@ public class MatchingData {
      */
     public Player getAnotherPlayer(Player player) {
 
-        if ( player1.name.equals(player.getName()) ) {
-            return Bukkit.getPlayerExact(player2.name);
-        } else if ( player2.name.equals(player.getName()) ) {
-            return Bukkit.getPlayerExact(player1.name);
+        if ( player1.getName().equals(player.getName()) ) {
+            return Utility.getPlayerExact(player2.getName());
+        } else if ( player2.getName().equals(player.getName()) ) {
+            return Utility.getPlayerExact(player1.getName());
         }
         return null;
     }

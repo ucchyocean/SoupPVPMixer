@@ -163,7 +163,7 @@ public class SoupPVPMixer extends JavaPlugin {
                 return true;
             }
 
-            target = Bukkit.getPlayerExact(args[1]);
+            target = Utility.getPlayerExact(args[1]);
             if ( target == null ) {
                 sender.sendMessage(ChatColor.RED +
                         "指定されたプレイヤーが見つかりません。");
@@ -221,7 +221,7 @@ public class SoupPVPMixer extends JavaPlugin {
                 return true;
             }
 
-            target = Bukkit.getPlayerExact(args[1]);
+            target = Utility.getPlayerExact(args[1]);
             if ( target == null ) {
                 sender.sendMessage(ChatColor.RED +
                         "指定されたプレイヤーが見つかりません。");
@@ -262,10 +262,11 @@ public class SoupPVPMixer extends JavaPlugin {
 
         sender.sendMessage(ChatColor.LIGHT_PURPLE + "========= Players ========");
         for ( BPUserData d : data ) {
-            String color = bp.getColorByPoint(d.point).toString();
+            String color = bp.getBPConfig().getColorFromPoint(d.getPoint());
             String message = String.format(
                     ChatColor.RED + "%s%s (%dPoint, %dKills, %dDeaths)",
-                    color, d.name, d.point, d.kills, d.deaths);
+                    color, d.getName(), d.getPoint(),
+                    d.getKillCount(), d.getDeathCount());
             sender.sendMessage(message);
         }
         sender.sendMessage(ChatColor.LIGHT_PURPLE + "==========================");
@@ -367,11 +368,11 @@ public class SoupPVPMixer extends JavaPlugin {
 
             MatchingData data = matching.get(i);
             String key = String.format("player%d-%d", (i+1), 1);
-            Player player1 = Bukkit.getPlayerExact(data.getPlayer1().name);
+            Player player1 = Utility.getPlayerExact(data.getPlayer1().getName());
             Location location1 = config.teleport.get(key);
 
             key = String.format("player%d-%d", (i+1), 2);
-            Player player2 = Bukkit.getPlayerExact(data.getPlayer2().name);
+            Player player2 = Utility.getPlayerExact(data.getPlayer2().getName());
             Location location2 = config.teleport.get(key);
 
             if ( location1 != null && location2 != null ) {
@@ -419,11 +420,11 @@ public class SoupPVPMixer extends JavaPlugin {
 
         // マッチングがまだ残っているプレイヤーを全部戻す
         for ( MatchingData data : matching ) {
-            Player p1 = Bukkit.getPlayerExact(data.getPlayer1().name);
+            Player p1 = Utility.getPlayerExact(data.getPlayer1().getName());
             if ( p1 != null ) {
                 p1.teleport(spectatorLocation, TeleportCause.PLUGIN);
             }
-            Player p2 = Bukkit.getPlayerExact(data.getPlayer2().name);
+            Player p2 = Utility.getPlayerExact(data.getPlayer2().getName());
             if ( p2 != null ) {
                 p2.teleport(spectatorLocation, TeleportCause.PLUGIN);
             }
@@ -462,27 +463,27 @@ public class SoupPVPMixer extends JavaPlugin {
         }
 
         HashMap<String, BPUserData> userdata = new HashMap<String, BPUserData>();
-        ArrayList<BPUserData> userRandomData = new ArrayList<BPUserData>();
+        ArrayList<UserRandomData> userRandomData = new ArrayList<UserRandomData>();
 
         for ( Player p : participant ) {
             BPUserData data = BPUserData.getData(p.getName());
-            int randomPoint = data.point + random.nextInt(config.matchingRandomRange);
+            int randomPoint = data.getPoint() + random.nextInt(config.matchingRandomRange);
             userdata.put(p.getName(), data);
-            userRandomData.add(new BPUserData(p.getName(), randomPoint, 0, 0));
+            userRandomData.add(new UserRandomData(randomPoint, p.getName()));
         }
 
         // ソート
-        Collections.sort(userRandomData, new Comparator<BPUserData>(){
-            public int compare(BPUserData ent1, BPUserData ent2){
-                return ent2.point - ent1.point;
+        Collections.sort(userRandomData, new Comparator<UserRandomData>(){
+            public int compare(UserRandomData ent1, UserRandomData ent2){
+                return ent2.getPoint() - ent1.getPoint();
             }
         });
 
         // 2人ずつペアにする
         matching = new ArrayList<MatchingData>();
         for ( int i=0; i<userRandomData.size()/2; i++ ) {
-            String player1 = userRandomData.get(i*2).name;
-            String player2 = userRandomData.get(i*2+1).name;
+            String player1 = userRandomData.get(i*2).getName();
+            String player2 = userRandomData.get(i*2+1).getName();
             MatchingData d = new MatchingData(
                     userdata.get(player1), userdata.get(player2));
             matching.add(d);
@@ -493,21 +494,23 @@ public class SoupPVPMixer extends JavaPlugin {
         for ( int i=0; i<matching.size(); i++ ) {
             MatchingData d = matching.get(i);
             Bukkit.broadcastMessage(String.format(ChatColor.RED + "%d. %s(%dP) - %s(%dP)",
-                    (i+1), d.getPlayer1().name, d.getPlayer1().point,
-                    d.getPlayer2().name, d.getPlayer2().point));
+                    (i+1), d.getPlayer1().getName(), d.getPlayer1().getPoint(),
+                    d.getPlayer2().getName(), d.getPlayer2().getPoint()));
         }
         Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "==========================");
 
         // 各プレイヤーにマッチング相手を表示する
         for ( MatchingData d : matching ) {
-            Player p1 = Bukkit.getPlayerExact(d.getPlayer1().name);
-            Player p2 = Bukkit.getPlayerExact(d.getPlayer2().name);
+            Player p1 = Utility.getPlayerExact(d.getPlayer1().getName());
+            Player p2 = Utility.getPlayerExact(d.getPlayer2().getName());
             BPUserData d1 = d.getPlayer1();
             BPUserData d2 = d.getPlayer2();
             p1.sendMessage(getMessage("matchingResult",
-                    d2.name, d2.point, d2.kills, d2.deaths));
+                    d2.getName(), d2.getPoint(),
+                    d2.getKillCount(), d2.getDeathCount()));
             p2.sendMessage(getMessage("matchingResult",
-                    d1.name, d1.point, d1.kills, d1.deaths));
+                    d1.getName(), d1.getPoint(),
+                    d1.getKillCount(), d1.getDeathCount()));
         }
         if ( spectator != null ) {
             spectator.sendMessage(getMessage("matchingResultSpectator"));
@@ -571,7 +574,7 @@ public class SoupPVPMixer extends JavaPlugin {
      */
     public static void clearInvAndHeal(Player player) {
 
-        player.setHealth(20);
+        player.setHealth(20F);
         player.setFoodLevel(20);
         player.getInventory().clear();
         player.getInventory().setHelmet(null);
@@ -595,8 +598,8 @@ public class SoupPVPMixer extends JavaPlugin {
 
         for ( MatchingData data : matching ) {
 
-            if ( data.getPlayer1().name.equals(name) ||
-                    data.getPlayer2().name.equals(name) ) {
+            if ( data.getPlayer1().getName().equals(name) ||
+                    data.getPlayer2().getName().equals(name) ) {
                 return data;
             }
         }

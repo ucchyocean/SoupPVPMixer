@@ -4,11 +4,90 @@
 # @copyright  Copyright ucchy 2013
 
 matchingRandomRange: 50
-kit:
-  items: 282,267,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282,282
-  armor: 0,0,0,0
+kit_items:
+  item1:
+    material: MUSHROOM_SOUP
+  item2:
+    material: IRON_SWORD
+  item3:
+    material: MUSHROOM_SOUP
+  item4:
+    material: MUSHROOM_SOUP
+  item5:
+    material: MUSHROOM_SOUP
+  item6:
+    material: MUSHROOM_SOUP
+  item7:
+    material: MUSHROOM_SOUP
+  item8:
+    material: MUSHROOM_SOUP
+  item9:
+    material: MUSHROOM_SOUP
+  item10:
+    material: MUSHROOM_SOUP
+  item11:
+    material: MUSHROOM_SOUP
+  item12:
+    material: MUSHROOM_SOUP
+  item13:
+    material: MUSHROOM_SOUP
+  item14:
+    material: MUSHROOM_SOUP
+  item15:
+    material: MUSHROOM_SOUP
+  item16:
+    material: MUSHROOM_SOUP
+  item17:
+    material: MUSHROOM_SOUP
+  item18:
+    material: MUSHROOM_SOUP
+  item19:
+    material: MUSHROOM_SOUP
+  item20:
+    material: MUSHROOM_SOUP
+  item21:
+    material: MUSHROOM_SOUP
+  item22:
+    material: MUSHROOM_SOUP
+  item23:
+    material: MUSHROOM_SOUP
+  item24:
+    material: MUSHROOM_SOUP
+  item25:
+    material: MUSHROOM_SOUP
+  item26:
+    material: MUSHROOM_SOUP
+  item27:
+    material: MUSHROOM_SOUP
+  item28:
+    material: MUSHROOM_SOUP
+  item29:
+    material: MUSHROOM_SOUP
+  item30:
+    material: MUSHROOM_SOUP
+  item31:
+    material: MUSHROOM_SOUP
+  item32:
+    material: MUSHROOM_SOUP
+  item33:
+    material: MUSHROOM_SOUP
+  item34:
+    material: MUSHROOM_SOUP
+  item35:
+    material: MUSHROOM_SOUP
+  item36:
+    material: MUSHROOM_SOUP
+kit_armor:
+  boots:
+    material: AIR
+  leggings:
+    material: AIR
+  chestplate:
+    material: AIR
+  helmet:
+    material: AIR
 teleportWorld: world
-teleport: 
+teleport:
   player1-1: 0,64,0
   player1-2: 10,64,10
   player2-1: 20,64,20

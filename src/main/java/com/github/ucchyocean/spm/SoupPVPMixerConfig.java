@@ -55,11 +55,28 @@ public class SoupPVPMixerConfig {
         FileConfiguration config = SoupPVPMixer.instance.getConfig();
 
         // 各コンフィグの取得
-        KitHandler handler = new KitHandler();
+        ItemConfigParser parser = new ItemConfigParser(SoupPVPMixer.instance.getLogger());
 
         matchingRandomRange = config.getInt("matchingRandomRange", 30);
-        kitItems = handler.convertToItemStack(config.getString("kit.items", ""));
-        kitArmor = handler.convertToItemStack(config.getString("kit.armor", ""));
+
+        ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+        ConfigurationSection itemsSection =
+                config.getConfigurationSection("kit_items");
+        for ( String sub : itemsSection.getKeys(false) ) {
+            items.add(parser.getItemFromSection(
+                    itemsSection.getConfigurationSection(sub),
+                    "kit_items - " + sub));
+        }
+
+        ArrayList<ItemStack> armor = new ArrayList<ItemStack>();
+        ConfigurationSection armorSection =
+                config.getConfigurationSection("kit_armor");
+        for ( String parts : new String[]{"boots", "leggings", "chestplate", "helmet"} ) {
+            armor.add(parser.getItemFromSection(
+                    armorSection.getConfigurationSection(parts),
+                    "kit_armor - " + parts));
+        }
+
         String teleWorld = config.getString("teleportWorld", "world");
         teleportWorld = Bukkit.getWorld(teleWorld);
         if ( teleportWorld == null ) {
