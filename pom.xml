@@ -3,8 +3,15 @@
   <groupId>com.github.ucchyocean.spm</groupId>
   <artifactId>SoupPvPMixer</artifactId>
   <version>0.3.0</version>
+
   <build>
     <finalName>${project.artifactId}</finalName>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

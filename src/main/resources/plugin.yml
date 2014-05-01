@@ -1,6 +1,6 @@
-name: SoupPVPMixer
+name: ${project.name}
 main: com.github.ucchyocean.spm.SoupPVPMixer
-version: 0.2.1
+version: ${project.version}
 author: ucchy
 description: Soup PVP Mixer
 depend: [BattlePoints]

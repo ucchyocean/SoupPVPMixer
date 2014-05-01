@@ -59,20 +59,20 @@ public class SoupPVPMixerConfig {
 
         matchingRandomRange = config.getInt("matchingRandomRange", 30);
 
-        ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+        kitItems = new ArrayList<ItemStack>();
         ConfigurationSection itemsSection =
                 config.getConfigurationSection("kit_items");
         for ( String sub : itemsSection.getKeys(false) ) {
-            items.add(parser.getItemFromSection(
+            kitItems.add(parser.getItemFromSection(
                     itemsSection.getConfigurationSection(sub),
                     "kit_items - " + sub));
         }
 
-        ArrayList<ItemStack> armor = new ArrayList<ItemStack>();
+        kitArmor = new ArrayList<ItemStack>();
         ConfigurationSection armorSection =
                 config.getConfigurationSection("kit_armor");
         for ( String parts : new String[]{"boots", "leggings", "chestplate", "helmet"} ) {
-            armor.add(parser.getItemFromSection(
+            kitArmor.add(parser.getItemFromSection(
                     armorSection.getConfigurationSection(parts),
                     "kit_armor - " + parts));
         }
